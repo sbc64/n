@@ -5,6 +5,7 @@
 # nixos-generate -f sd-aarch64-installer --system aarch64-linux -c ./pi3-sd.nix -I nixpkgs=./nixpkgs
 # raspberry pi needs to have a memory patch:
 # curl -L "https://github.com/NixOS/nixpkgs/pull/82718.patch" | git am
+# Run the above in the nixpkgs submodule
 {
   imports = [
     ./networking.nix
@@ -25,4 +26,5 @@
   sdImage.compressImage = false;
   systemd.services.sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
   services.sshd.enabled = true;
+  system.copySystemConfiguration = true;
 }

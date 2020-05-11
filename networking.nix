@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, lib, ... }:
 {
   networking = {
     enableIPv6 = false;
@@ -31,6 +31,10 @@
           pskRaw = "86c32237c9c090fa4179777708847b790082291a2c3086bd7a23d44daefc8ae7";
         };
       };
+    };
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 22 ];
     };
   };
   systemd.services.wpa_supplicant = {

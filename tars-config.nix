@@ -52,6 +52,7 @@
       allowPing = true;
       allowedTCPPorts = [ 22 ];
     };
+
     nat = {
       enable = true;
       externalIP = "192.168.1.224";

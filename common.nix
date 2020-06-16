@@ -5,6 +5,7 @@
   wget
      vim
      neovim
+     starship
      git # not gitFull because it takes too long
      tmux
   ];
@@ -22,6 +23,7 @@
   programs = {
     zsh = {
       enable = true;
+      enableCompletion = true;
       interactiveShellInit = ''
         # z - jump around
         source ${pkgs.fetchurl {

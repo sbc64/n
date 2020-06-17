@@ -10,6 +10,10 @@
 # Run the above in the nixpkgs submodule
 # The above might not be needed once this gets merged
 # https://github.com/NixOS/nixpkgs/pull/82718
+#
+# This config just bootstraps the pi3 to a network headlessly
+# You need to eable this in your host machine config:
+# boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
 {
   imports = [
     <nixpkgs/nixos/modules/installer/cd-dvd/sd-image-aarch64.nix>
@@ -51,7 +55,7 @@
     wireless = {
       # The interfaces wpa_supplicant will use. If empty, 
       # it will automatically use all wireless interfaces. 
-      interfaces = [ "wlan1" "wlan0" ]; 
+      #interfaces = [ ]; 
       userControlled.enable = true;
       userControlled.group = "wheel";
       networks = {
@@ -89,8 +93,9 @@
     extraModprobeConfig = ''
       options cf680211 ieee80211_regdom="GB"
     '';
-    kernelPackages = pkgs.linuxPackages_rpi3;
-    #kernelPackages = pkgs.linuxPackages_latest;
+    # # pi3 kernel doesn't work with big screen tv
+    #kernelPackages = pkgs.linuxPackages_rpi3;
+    kernelPackages = pkgs.linuxPackages_latest;
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;

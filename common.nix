@@ -5,11 +5,12 @@
   wget
      vim
      neovim
+     starship
      git # not gitFull because it takes too long
      tmux
   ];
 
-  services.openssh.enable = true;
+  services.sshd.enable = true;
   systemd.services = {
     sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
     wpa_supplicant = {

@@ -23,6 +23,7 @@
   programs = {
     zsh = {
       enable = true;
+      enableCompletion = true;
       interactiveShellInit = ''
         # z - jump around
         source ${pkgs.fetchurl {

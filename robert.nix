@@ -23,22 +23,13 @@
 
   networking = {
     enableIPv6 = false;
-    hostName = "pi3";
+    hostName = "robert";
     defaultGateway = {
       address = "192.168.1.254";
       interface = "wlan0";
     };
 
     interfaces = {
-      eth0 = {
-        useDHCP = true;
-        ipv4.addresses = [
-          {
-            address="1.1.1.2";
-            prefixLength = 24;
-          }
-        ];
-      };
       wlan0 = {
         useDHCP = false;
         ipv4.addresses = [
@@ -53,8 +44,9 @@
       enable = true;
       wifi.backend = "wpa_supplicant";
     };
+
     firewall = {
-      enable = true;
+      enable = false;
       allowPing = true;
       allowedTCPPorts = [ 22 ];
     };

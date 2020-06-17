@@ -10,13 +10,16 @@
      tmux
   ];
 
+  # Enable sshd at startup
   services.sshd.enable = true;
-  systemd.services = {
-    sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
-    wpa_supplicant = {
-      enable = true;
-      serviceConfig.Restart = "always";
-      wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
+  systemd = {
+    services = {
+      sshd.wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
+      wpa_supplicant = {
+        enable = true;
+        serviceConfig.Restart = "always";
+        wantedBy = lib.mkOverride 40 [ "multi-user.target" ];
+      };
     };
   };
 

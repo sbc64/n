@@ -24,7 +24,7 @@
 
   networking = {
     enableIPv6 = false;
-    hostName = "tars";
+    hostName = "stannis";
     defaultGateway = {
       address = "192.168.1.254";
       interface = "wlp3s0";

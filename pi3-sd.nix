@@ -39,6 +39,7 @@
 
   # Fixed values
   sdImage.compressImage = false;
+  sdImage.firmwareSize = 512;
   networking.wireless.userControlled = {
     enable = true;
     group = "wheel";

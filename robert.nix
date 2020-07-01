@@ -3,6 +3,7 @@
   imports = [ 
     /etc/nixos/common.nix
     /etc/nixos/uk_wifi.nix
+/etc/nixos/wifi-ap.nix
   ];
 
   hardware = {
@@ -45,13 +46,20 @@
   networking = {
     enableIPv6 = false;
     hostName = "robert";
-    wireless.enable = true;
+    wireless = {
+	enable = true;
+	interfaces = [ "wlan1" ];
+   };
     defaultGateway = {
       address = "192.168.1.254";
-      interface = "wlan0";
+      interface = "wlan1";
     };
+    nameservers = [
+      "1.1.1.1"
+    ];
+
     interfaces = {
-      wlan0 = {
+      wlan1 = {
         useDHCP = false;
         ipv4.addresses = [
           {

@@ -3,6 +3,7 @@
   imports = [ 
     /etc/nixos/hardware-configuration.nix
     /etc/nixos/common.nix
+    /etc/nixos/uk_wifi.nix
   ];
 
   boot = {
@@ -51,14 +52,6 @@
       enable = true;
       allowPing = true;
       allowedTCPPorts = [ 22 ];
-    };
-
-    nat = {
-      enable = true;
-      externalIP = "192.168.1.224";
-      externalInterface = "wlp3s0";
-      internalIPs = [ "1.1.1.0/24" ];
-      internalInterfaces = [ "enp0s25" ];
     };
   };
 }

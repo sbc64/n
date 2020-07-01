@@ -23,6 +23,10 @@ in {
   networking.firewall.extraCommands = ''
 	iptables -t nat -A POSTROUTING -o wlan1 -j MASQUERADE
   '';
+   
+  services.udev.extraRules = ''
+    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*",ATTR{address}=="b8:27:eb:5e:55:31", ATTR{dev_id}=="0x0", ATTR{type}=="1", KERNEL=="eth*", NAME="wlan0"
+  '';
 
   boot.kernel.sysctl = {
     "net.ipv4.conf.${wifi}.forwarding" = true;
@@ -32,37 +36,37 @@ in {
   };
 
   systemd.services.hostapd = {
-     description = "Hostapd";
-     path = [ pkgs.hostapd ];
-     wantedBy = [ "network.target" ];
-     after = [
-       "${wifi}-cfg.service"
-       "nat.service"
-       "bind.service"
-       "dhcpd.service"
-       "sys-subsystem-net-devices-${wifi}.service"
-     ];
-    serviceConfig = {
-	ExecStart = "${pkgs.hostapd}/bin/hostapd ${
-		pkgs.writeText "hostapd.conf" ''
-interface=${wifi}
-driver=nl80211
-ssid=${ssid}
-hw_mode=g
-channel=1
-ieee80211n=1
-wmm_enabled=1
-ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
-macaddr_acl=0
-auth_algs=1
-ignore_broadcast_ssid=0
-wpa=2
-wpa_key_mgmt=WPA-PSK
-wpa_passphrase=${password}
-rsn_pairwise=CCMP
-''
-	}";
-	Restart = "always";
+  description = "Hostapd";
+  path = [ pkgs.hostapd ];
+  wantedBy = [ "network.target" ];
+  after = [
+    "${wifi}-cfg.service"
+    "nat.service"
+    "bind.service"
+    "dhcpd.service"
+    "sys-subsystem-net-devices-${wifi}.service"
+  ];
+  serviceConfig = {
+    ExecStart = "${pkgs.hostapd}/bin/hostapd ${
+      pkgs.writeText "hostapd.conf" ''
+        interface=${wifi}
+        driver=nl80211
+        ssid=${ssid}
+        hw_mode=g
+        channel=1
+        ieee80211n=1
+        wmm_enabled=1
+        ht_capab=[HT40][SHORT-GI-20][DSSS_CCK-40]
+        macaddr_acl=0
+        auth_algs=1
+        ignore_broadcast_ssid=0
+        wpa=2
+        wpa_key_mgmt=WPA-PSK
+        wpa_passphrase=${password}
+        rsn_pairwise=CCMP
+      ''
+    }";
+    Restart = "always";
     };
   };
   services.dnsmasq = {

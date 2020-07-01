@@ -3,7 +3,7 @@
   imports = [ 
     /etc/nixos/common.nix
     /etc/nixos/uk_wifi.nix
-/etc/nixos/wifi-ap.nix
+    /etc/nixos/wifi-ap.nix
   ];
 
   hardware = {
@@ -21,7 +21,8 @@
   swapDevices = [ { device = "/swapfile"; size = 1024; } ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_4_19;
+    #kernelPackages = pkgs.linuxPackages_latest;
     kernelParams = ["cma=32M"];
     loader = {
       grub.enable = false;

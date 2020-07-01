@@ -20,7 +20,7 @@ in {
 
   networking = {
     wireless.networks."EE-Hub-9iPp" = {
-      extraConfig = ''bssid_blacklist=ac:84:c6:b1:ee:d7'';
+      #extraConfig = ''bssid_blacklist=ac:84:c6:b1:ee:d7'';
     };
   };
    

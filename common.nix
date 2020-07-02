@@ -1,6 +1,6 @@
 { config, pkgs, lib, ... }:
 let 
-  tmuxConf = ''# Set XTerm key bindings
+  tmuxConf = pkgs.writeText ''# Set XTerm key bindings
 setw -g xterm-keys on
 
 # Set colors

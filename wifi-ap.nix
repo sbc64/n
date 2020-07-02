@@ -1,5 +1,4 @@
 { lib, pkgs, ... }:
-
 let
   apInterface = "wlan0";
   internetInterface = "wlan1";
@@ -8,11 +7,11 @@ let
   servedAddressRange = "10.10.10.2,10.10.10.150,12h";
   ssid = "kerbal_optout_nomap";
   password = "-@SiberianSensuousReroute=";
-
 in {
+  imports = [ ./mac.nix ];
 
   networking.firewall.trustedInterfaces = [ apInterface internetInterface ];
-  networking.networkmanager.unmanaged = [ apInterface ];
+  networking.networkmanager.unmanaged = [ apInterface internetInterface ];
   networking.interfaces."${apInterface}".ipv4.addresses = [{
     address = ipAddress;
     prefixLength = prefixLength;
@@ -24,15 +23,13 @@ in {
     };
   };
    
-  services.udev.extraRules = ''
-    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*",ATTR{address}=="b8:27:eb:5e:55:31", KERNEL=="wlan*", NAME="${apInterface}"
-    SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*",ATTR{address}=="d0:37:45:6a:94:c3", KERNEL=="wlan*", NAME="${internetInterface}"
-  '';
+  systemd.network.enable = true;
 
   boot.kernel.sysctl = {
     "net.ipv4.conf.${apInterface}.forwarding" = true;
     "net.ipv4.conf.${internetInterface}.forwarding" = true;
   };
+
 
   systemd.services.hostapd = {
     description = "Hostapd";

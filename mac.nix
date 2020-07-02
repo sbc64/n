@@ -6,28 +6,46 @@
 # udevadm test-builtin net_id /sys/class/net/*
 
 { pkgs, lib, config, ... }:
-let udevNetSetupLinkRules = pkgs.writeTextFile {
+let 
+  rules = ''
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:27:eb:5e:55:31", NAME="wlan0", ATTR{type}=="1"
+SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="d0:37:45:6a:94:c3", NAME="wlan1", ATTR{type}=="1"
+  '';
+
+  udevNetSetupLinkRules = pkgs.writeTextFile {
     name = "80-net-setup-link.rules";
     destination = "/etc/udev/rules.d/80-net-setup-link.rules";
     text = ''
-	SUBSYSTEM!="net", GOTO="net_setup_link_end"
-	IMPORT{builtin}="path_id"
-	ACTION!="add", GOTO="net_setup_link_end"
-	IMPORT{builtin}="net_setup_link"
-	SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="d0:37:45:6a:94:c3", KERNEL=="wlan*", NAME="wlan1", ATTR{dev_id}=="0x0", ATTR{type}=="1", ATTR{idVendor}=="2357", ATTR{idProduct}=="010c" 
-	SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="b8:27:eb:5e:55:31", KERNEL=="wlan*", NAME="wlan0", ATTR{dev_id}=="0x0", ATTR{type}=="1"
-	LABEL="net_setup_link_end"
+      ${rules}
+      SUBSYSTEM!="net", GOTO="net_setup_link_end"
+      IMPORT{builtin}="path_id"
+      ACTION!="add", GOTO="net_setup_link_end"
+      ${rules}
+      LABEL="net_setup_link_end"
     '';
   };
 in
 {
   networking.usePredictableInterfaceNames = true;
-
   boot.initrd = {
     extraUdevRulesCommands = ''
-      cp -v -f ${pkgs.systemd}/lib/udev/rules.d/75-net-description.rules $out/
+      cp -v -f ${pkgs.systemd}/lib/udev/rules.d/75-net-description.rules $out
       cp -v -f ${udevNetSetupLinkRules}/etc/udev/rules.d/80-net-setup-link.rules $out/
     '';
+  };
+
+  services.udev.extraRules = rules;
+  systemd.network.links = {
+    "antenna" = {
+      enable = true;
+      linkConfig = { MACAddress = "d0:37:45:6a:94:c3"; };
+      matchConfig = { Name = "wlan1"; };
+    };
+    "embeded" = {
+      enable = true;
+      linkConfig = { MACAddress = "b8:27:eb:5e:55:31"; };
+      matchConfig = { Name = "wlan0"; };
+    };
   };
 
   # Only useful here in stage-2 if the device is removed and re-added

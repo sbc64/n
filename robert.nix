@@ -23,7 +23,11 @@
   boot = {
     kernelPackages = pkgs.linuxPackages_4_19;
     #kernelPackages = pkgs.linuxPackages_latest;
-    kernelParams = ["cma=32M"];
+    kernelParams = [
+      "cma=32M"
+      "nosplash"
+      "noquiet"
+    ];
     loader = {
       grub.enable = false;
       raspberryPi = {

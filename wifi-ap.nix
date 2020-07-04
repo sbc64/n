@@ -2,15 +2,22 @@
 let
   apInterface = "wlan0";
   internetInterface = "wlan1";
-  ipAddress = "10.10.10.1";
+  antennaMac = "d0:37:45:6a:94:c3";
+  ipAddress = "10.0.0.1";
   prefixLength = 24;
-  servedAddressRange = "10.10.10.2,10.10.10.150,12h";
-  ssid = "kerbal_optout_nomap";
-  password = "-@SiberianSensuousReroute=";
+  servedAddressRange = "10.0.0.2,10.0.0.50,5m";
+  ssid = "kerbal";
+  password = "SiberianSensuousReroute94";
 in {
   imports = [ ./mac.nix ];
 
-  networking.firewall.trustedInterfaces = [ apInterface internetInterface ];
+  networking.firewall = {
+    trustedInterfaces = [ apInterface internetInterface ];
+    extraCommands = ''
+      iptables -t nat -A POSTROUTING -o ${internetInterface} -j MASQUERADE
+    '';
+  };
+
   networking.networkmanager.unmanaged = [ apInterface internetInterface ];
   networking.interfaces."${apInterface}".ipv4.addresses = [{
     address = ipAddress;
@@ -22,14 +29,30 @@ in {
       #extraConfig = ''bssid_blacklist=ac:84:c6:b1:ee:d7'';
     };
   };
-   
-  systemd.network.enable = true;
 
+   
   boot.kernel.sysctl = {
     "net.ipv4.conf.${apInterface}.forwarding" = true;
     "net.ipv4.conf.${internetInterface}.forwarding" = true;
   };
 
+  systemd.services.check-ap = {
+    description = "Reboots computer if the ${internetInterface} is not correct";
+    wantedBy = [ "multi-user.targer" ];
+    after = [ "hostapd.service" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.bash}/bin/bash ${pkgs.writeText "check-wifi.sh" ''
+              wifi=$(${pkgs.coreutils}/bin/cat /sys/class/net/${internetInterface}/address)
+              echo "Found MAC $wifi for ${internetInterface}"
+              if [[ "$wifi" != "${antennaMac}" ]]; then
+                 echo "rebooting..."
+                 ${pkgs.systemd}/bin/systemctl reboot
+              fi
+          ''}";
+      Type = "oneshot";
+      Restart = "no";
+    };
+  };
 
   systemd.services.hostapd = {
     description = "Hostapd";
@@ -43,7 +66,7 @@ in {
       "sys-subsystem-net-devices-${apInterface}.service"
     ];
     serviceConfig = {
-      ExecStart = "${pkgs.hostapd}/bin/hostapd ${
+      ExecStart = "${pkgs.hostapd}/bin/hostapd -d ${
         pkgs.writeText "hostapd.conf" ''
           interface=${apInterface}
           driver=nl80211
@@ -68,15 +91,8 @@ in {
   services.dnsmasq = {
     enable = true;
     extraConfig = ''
-      # Only listen to routers' LAN NIC.  Doing so opens up tcp/udp port 53 to
-      # localhost and udp port 67 to world:
       interface=${apInterface}
-
-      # Explicitly specify the address to listen on
       listen-address=${ipAddress}
-
-      # Dynamic range of IPs to make available to LAN PC and the lease time.
-      # Ideally set the lease time to 5m only at first to test everything works okay before you set long-lasting records.
       dhcp-range=${servedAddressRange}
     '';
   };

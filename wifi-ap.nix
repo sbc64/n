@@ -4,10 +4,11 @@ let
   embeded = { name = "wlan0"; mac =  "b8:27:eb:5e:55:31";};
   ipAddress = "10.0.0.1";
   prefixLength = 24;
-  servedAddressRange = "10.0.0.2,10.0.0.50,5m";
-  ssid = "kerbal";
+  servedAddressRange = "10.0.0.2,10.0.0.50,24h";
+  ssid = "kerbal_optout_nomap";
   password = "SiberianSensuousReroute94";
   repeaterBSSID = "ac:84:c6:b1:ee:d7";
+  apBSSID = "04:a2:22:12:47:9c";
   rules = ''
   SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${embeded.mac}", NAME="${embeded.name}", ATTR{type}=="1"
   SUBSYSTEM=="net", ACTION=="add", DRIVERS=="?*", ATTR{address}=="${antenna.mac}", NAME="${antenna.name}", ATTR{type}=="1"

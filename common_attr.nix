@@ -1,4 +1,5 @@
-{ pkgs }:
+with import <nixpkgs> { };
+{}:
 {
   commonPackages = with pkgs; [
      wget
@@ -11,5 +12,6 @@
   ];
   workPackages = with pkgs; [
     neovim
+    lazydocker
   ];
 }

@@ -1,91 +1,15 @@
 { config, pkgs, lib, ... }:
 let 
-  tmuxConf = pkgs.writeText ''# Set XTerm key bindings
-setw -g xterm-keys on
 
-# Set colors
-set -g default-terminal "xterm-256color"
-
-# Count sessions start at 1
-set -g base-index 1
-
-# Use vim bindings
-setw -g mode-keys vi
-
-# Set default shell
-set -g default-shell $SHELL
-
-# Enable mouse mode (tmux 2.1 and above)
-set -g mouse on
-
-# Windows and panes creations
-bind c new-window -c "#{pane_current_path}"
-bind \ split-window -h -c "#{pane_current_path}"
-bind - split-window -v -c "#{pane_current_path}"
-unbind '"'
-unbind %
-
-# switch panes using Alt-arrow without prefix
-bind -n M-h select-pane -L
-bind -n M-l select-pane -R
-bind -n M-k select-pane -U
-bind -n M-j select-pane -D
-
-# pane resizing using arrow keys
-bind-key -n M-Left resize-pane -L
-bind-key -n M-Right resize-pane -R
-bind-key -n M-Up resize-pane -U
-bind-key -n M-Down resize-pane -D
-
-# Select windows using Alt + <number>. Like firefox
-bind-key -n M-1 select-window -t 1
-bind-key -n M-2 select-window -t 2
-bind-key -n M-3 select-window -t 3
-bind-key -n M-4 select-window -t 4
-bind-key -n M-5 select-window -t 5
-bind-key -n M-6 select-window -t 6
-bind-key -n M-7 select-window -t 7
-bind-key -n M-8 select-window -t 8
-bind-key -n M-9 select-window -t 9
-
-# remap prefix from 'C-b' to 'C-a'
-unbind C-b
-set-option -g prefix C-a
-bind-key C-a send-prefix
-
-# bind-key -T copy-mode-vi v send-keys -X begin-selection
-# For binding 'y' to copy and exiting selection mode
-bind-key -T copy-mode-vi v send-keys -X begin-selection
-bind-key -T copy-mode-vi y send-keys -X copy-selection
-bind-key -T copy-mode-vi r send-keys -X rectangle-toggle
-bind-key -T copy-mode-vi y send-keys -X copy-pipe-and-cancel 'xclip -sel clip -i'
-
-# dev mode
-unbind D
-
-# Justify windows to left
-set-option -g status-justify centre
-
-# Place status bar on top
-set-option -g status-position top
-
-# Clean status bar
-set -g status-left ""
-set -g status-right ""
-
-# Set status bar colors
-set -g status-bg black
-set -g status-fg white
-set -g status-interval 10
-set -g status-left-length 70
-set -g status-right-length 60
-set -g status-interval 1
-set -g status-right '#[fg=white]%H:%M'
-set -g status-left "#[fg=yellow]#(curl ipecho.net/plain;echo)@#(hostname)"
-set -sg escape-time 0;
-'';
+  temp = pkgs.writeText "tmux.conf" "${pkgs.fetchurl {
+      name = "tmux.conf";
+      url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
+      sha256 = "f265b99450cf3056bc248a99ed01e67957360674a71193f2a94c3d931ca76802";
+  }}";
+  tmuxConf = builtins.readFile temp;
 in
 {
+  
   time.timeZone = "Europe/London";
   environment.systemPackages = with pkgs; [
      wget
@@ -96,7 +20,6 @@ in
      starship
      git # not gitFull because it takes too long
   ];
-
   # Enable sshd at startup
   services.sshd.enable = true;
   systemd = {
@@ -136,7 +59,7 @@ in
     tmux = {
       enable = true;
       extraConfig = tmuxConf;
-      };
+    };
   };
 
   users = {

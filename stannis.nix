@@ -26,23 +26,6 @@
   networking = {
     enableIPv6 = false;
     hostName = "stannis";
-    defaultGateway = {
-      address = "192.168.1.254";
-      interface = "wlp3s0";
-    };
-
-    interfaces = {
-      wlp3s0 = {
-        useDHCP = false;
-        ipv4.addresses = [
-          {
-            address="192.168.1.224";
-            prefixLength = 24;
-          }
-        ];
-      };
-    };
-
     networkmanager = {
       enable = true;
       wifi.backend = "wpa_supplicant";

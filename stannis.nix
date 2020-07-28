@@ -1,4 +1,7 @@
 { config, pkgs, lib, ... }:
+let
+  c = lib.recursiveUpdate (pkgs.callPackage ./common_attr.nix {}) {};
+in
 {
   imports = [ 
     /etc/nixos/hardware-configuration.nix
@@ -14,6 +17,10 @@
       efi.canTouchEfiVariables = true;
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    wireguard
+  ] ++ c.commonPackages ++ c.workPackages;
 
   services = {
     logind.lidSwitch = "ignore";

@@ -7,18 +7,7 @@ let
   }}";
 in
 {
-  
   time.timeZone = "Europe/London";
-  environment.systemPackages = with pkgs; [
-     wget
-     curl
-     traceroute
-     vim
-     htop
-     starship
-     git # not gitFull because it takes too long
-  ];
-  # Enable sshd at startup
   services.sshd.enable = true;
   systemd = {
     services = {

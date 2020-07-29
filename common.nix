@@ -1,26 +1,13 @@
 { config, pkgs, lib, ... }:
 let 
-
-  temp = pkgs.writeText "tmux.conf" "${pkgs.fetchurl {
-      name = "tmux.conf";
-      url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
-      sha256 = "f265b99450cf3056bc248a99ed01e67957360674a71193f2a94c3d931ca76802";
+  tmuxConf = builtins.readFile "${pkgs.fetchurl {
+    name = "tmux.conf";
+    url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
+    sha256 = "f265b99450cf3056bc248a99ed01e67957360674a71193f2a94c3d931ca76802";
   }}";
-  tmuxConf = builtins.readFile temp;
 in
 {
-  
   time.timeZone = "Europe/London";
-  environment.systemPackages = with pkgs; [
-     wget
-     curl
-     traceroute
-     vim
-     htop
-     starship
-     git # not gitFull because it takes too long
-  ];
-  # Enable sshd at startup
   services.sshd.enable = true;
   systemd = {
     services = {

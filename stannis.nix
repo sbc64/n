@@ -50,6 +50,7 @@ in
   };
 
   virtualisation.docker = {
+    liveRestore = false;
     enable = true;
   };
 }

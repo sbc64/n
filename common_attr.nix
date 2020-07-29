@@ -13,5 +13,6 @@ with import <nixpkgs> { };
   workPackages = with pkgs; [
     neovim
     lazydocker
+    go_1_14
   ];
 }

@@ -8,7 +8,7 @@ in
     liveRestore = false;
     enableOnBoot = true;
     autoPrune.enable = true;
-    extraOptions = ''--metrics-addr=172.18.0.1:${metricsPort} --experimental'';
+    extraOptions = ''--metrics-addr=172.17.0.1:${toString metricsPort} --experimental'';
   };
 
   networking.firewall = {

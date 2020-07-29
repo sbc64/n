@@ -23,7 +23,9 @@ in
 
   programs = {
     zsh = {
-    ohMyZsh.enable = true;
+    ohMyZsh = {
+      enable = true;
+    };
       enable = true;
       enableCompletion = true;
       interactiveShellInit = ''

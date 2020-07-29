@@ -1,4 +1,7 @@
 { config, ...}:
+let
+  secrets = import <secrets>;
+in
 {
   networking = {
     defaultGateway = {
@@ -6,7 +9,7 @@
       interface = "wlan1";
     };
     wireless.networks."EE-Hub-9iPp" = {
-      pskRaw = "86c32237c9c090fa4179777708847b790082291a2c3086bd7a23d44daefc8ae7";
+      pskRaw = secrets.uk-wifi.psk;
     };
   };
 }

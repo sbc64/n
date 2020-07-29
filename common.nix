@@ -5,6 +5,7 @@ let
     url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
     sha256 = "f265b99450cf3056bc248a99ed01e67957360674a71193f2a94c3d931ca76802";
   }}";
+  secrets = import <secrets>;
 in
 {
   time.timeZone = "Europe/London";
@@ -22,6 +23,7 @@ in
 
   programs = {
     zsh = {
+    ohMyZsh.enable = true;
       enable = true;
       enableCompletion = true;
       interactiveShellInit = ''
@@ -30,16 +32,11 @@ in
           url = "https://raw.githubusercontent.com/rupa/z/6586b61384cff33d2c3ce6512c714e20ea59bfed/z.sh";
           sha256 = "b3969a36b35889a097cd5a38e5e9740762f0e45f994b5e45991e2a9bdb2b8079";
         }}
-        touch /root/.zshrc
-        export ZSH=${pkgs.oh-my-zsh}/share/oh-my-zsh
-        if [[ "$TMUX" == "" ]]; then
-          WHOAMI=$(whoami)
-          if tmux has-session -t $WHOAMI 2>/dev/null; then
-            tmux -2 attach-session -t $WHOAMI
-          else
-              tmux -2 new-session -s $WHOAMI
-          fi
-        fi
+        source "${pkgs.fetchurl {
+          name = "zshrc";
+          url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.zshrc";
+          sha256 = "3ef0237c7f38a7c5fd6f3ad012ec5f764ad032e857904b6ec688f485abfbe715";
+        }}"
       '';
       promptInit = "";
     };
@@ -52,11 +49,8 @@ in
   users = {
     defaultUserShell = pkgs.zsh;
     users.root = {
-      hashedPassword = "$6$UvihnRZQ94c$O3.dGzLep0aqSXcqQTnN4nVArLAHaCP.nq1zSc.N/cCW4oCWudNIFu84Vp81fNDK/u3nZXfJ6qji0/zFxn5V9/";
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN0SSm2avOhdiDaQ38q/3NbtrakOFY8jLXcvA9Syb6Xx"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO+ZACqjP1HxwU8LbyFXObeDOItVrrG8aPw9GQ+E4LlR Ute@MacBook-Pro-4"
-      ];
+      hashedPassword = secrets.common.pw;
+      openssh.authorizedKeys.keys = secrets.common.ssh_keys;
     };
   };
 

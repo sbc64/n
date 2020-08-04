@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }:
 {
   imports = [ 
-    /etc/nixos/common.nix
+    ./common.nix
     /etc/nixos/uk_wifi.nix
     /etc/nixos/wifi-ap.nix
   ];

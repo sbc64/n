@@ -1,10 +1,5 @@
 { config, pkgs, lib, ... }:
 let 
-  tmuxConf = builtins.readFile "${pkgs.fetchurl {
-    name = "tmux.conf";
-    url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
-    sha256 = "f265b99450cf3056bc248a99ed01e67957360674a71193f2a94c3d931ca76802";
-  }}";
   secrets = import <secrets>;
 in
 {
@@ -37,14 +32,18 @@ in
         source "${pkgs.fetchurl {
           name = "zshrc";
           url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.zshrc";
-          sha256 = "3ef0237c7f38a7c5fd6f3ad012ec5f764ad032e857904b6ec688f485abfbe715";
+          sha256 = "72949c45efbae6af7c6080874298655f53c998013e0e92ddffc9b94b3db30587";
         }}"
       '';
       promptInit = "";
     };
     tmux = {
       enable = true;
-      extraConfig = tmuxConf;
+      extraConfig = builtins.readFile "${pkgs.fetchurl {
+        name = "tmux.conf";
+        url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
+        sha256 = "6a1bba3ead2477f387a18bcae1049dbfd309d8ace064c73cfd4b6bf1efdc2a24";
+      }}";
     };
   };
 

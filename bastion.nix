@@ -5,6 +5,7 @@ let
   secrets = import <secrets>;
   firstOctals =  "10.100.0";
   opsLan = firstOctals + ".1/24";
+  shared = import ./shared_attr.nix;
 in
 {
   imports = [
@@ -49,13 +50,13 @@ in
       peers = [
         { 
           # stannis
-          publicKey = "bsWyv2TGZeqXqc+dSX3J6sHhPa8z5Eg3ahrqXG9aNxI=";
-          allowedIPs = [ "10.100.0.2/32" ];
+          publicKey = shared.stannis.wg.pubk;
+          allowedIPs = [ shared.stannis.wg.ip ];
         }
         {
           # robert
-          publicKey = "zll0iq9EDn1wab+rMGoccVvV2AdHfpNJdi3RkvCcdys=";
-          allowedIPs = [ "10.100.0.3/32" ];
+          publicKey = shared.robert.wg.pubkey;
+          allowedIPs = [ shared.robert.wg.ip ];
         }
       ];
     };

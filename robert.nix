@@ -28,6 +28,7 @@ in
   swapDevices = [ { device = "/swapfile"; size = 1024; } ];
 
   boot = {
+    # https://github.com/NixOS/nixpkgs/issues/82455
     kernelPackages = pkgs.linuxPackages_5_6;
     kernelParams = [
       "cma=32M"
@@ -50,7 +51,6 @@ in
         uboot.enable = true;
         firmwareConfig = ''
           gpu_mem=16
-          hdmi_blanking=1
           dtoverlay=disable-bt
           dtoverlay=disable-wifi
           dtoverlay=pi3-disable-wifi

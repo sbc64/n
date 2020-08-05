@@ -34,14 +34,30 @@ in
       "nosplash"
       "noquiet"
     ];
+    blacklistedKernelModules = [
+      "ath9k_htc"
+      "ath9k_common"
+      "ath9k_hw"
+      "ath"
+      "hcio"
+    ];
+
     loader = {
       grub.enable = false;
       raspberryPi = {
         enable = true;
         version = 3;
         uboot.enable = true;
+        firmwareConfig = ''
+          gpu_mem=16
+          hdmi_blanking=1
+          dtoverlay=disable-bt
+          dtoverlay=disable-wifi
+          dtoverlay=pi3-disable-wifi
+          dtoverlay=pi3-disable-bt
+        '';
       };
-      timeout = 1;
+      timeout = 2;
     };
     cleanTmpDir = true;
     extraModprobeConfig = ''

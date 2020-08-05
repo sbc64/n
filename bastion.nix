@@ -18,9 +18,26 @@ in
     wireguard
   ] ++ c.commonPackages ++ c.workPackages;
 
+  services.dnscrypt-proxy2 = {
+    enable = false;
+    settings = {
+      sources.public-resolvers = {
+        urls = [ "https://download.dnscrypt.info/resolvers-list/v2/public-resolvers.md" ];
+        cache_file = "public-resolvers.md";
+        minisign_key = "RWQf6LRCGA9i53mlYecO4IzT51TGPpvWucNSCh1CBM0QTaLn73Y7GFO3";
+        refresh_delay = 72;
+      };
+    };
+  };
   services.dnsmasq = {
     enable = true;
-    servers = [ "127.0.0.1" "1.1.1.1" "8.8.8.8" "8.8.4.4" ];
+    servers = [ "127.0.0.1" "10.100.0.1" "1.1.1.1" "8.8.8.8" "8.8.4.4" ];
+    extraConfig = ''
+      interface=wg0
+      listen-address=${shared.bastion.wg.ip}
+      interface=eth0
+      listen-address=165.227.245.71
+    '';
   };
 
 

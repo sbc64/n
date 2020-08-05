@@ -8,6 +8,10 @@ in
       address = "192.168.1.254";
       interface = interface;
     };
+    nameservers = [
+        "1.1.1.1"
+    ];
+
     wireless.enable = true;
     networkmanager.unmanaged = [ interface ];
     wireless.networks."EE-Hub-9iPp" = {

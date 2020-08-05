@@ -1,4 +1,7 @@
 { config, pkgs, lib, ... }:
+let
+  qca9271 = pkgs.callPackage ./qca9271_firmware.nix { };
+in
 {
   imports = [ 
     ./common.nix
@@ -7,8 +10,12 @@
   ];
 
   hardware = {
+    firmware = with pkgs; [ 
+      firmwareLinuxNonfree
+      wireless-regdb
+      qca9271
+    ];
     enableRedistributableFirmware = true;
-    firmware = [ pkgs.wireless-regdb ];
   };
 
   fileSystems = {
@@ -21,21 +28,36 @@
   swapDevices = [ { device = "/swapfile"; size = 1024; } ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_4_19;
-    #kernelPackages = pkgs.linuxPackages_latest;
+    # https://github.com/NixOS/nixpkgs/issues/82455
+    kernelPackages = pkgs.linuxPackages_5_6;
     kernelParams = [
       "cma=32M"
       "nosplash"
       "noquiet"
     ];
+    blacklistedKernelModules = [
+      "ath9k_htc"
+      "ath9k_common"
+      "ath9k_hw"
+      "ath"
+      "hcio"
+    ];
+
     loader = {
       grub.enable = false;
       raspberryPi = {
         enable = true;
         version = 3;
         uboot.enable = true;
+        firmwareConfig = ''
+          gpu_mem=16
+          dtoverlay=disable-bt
+          dtoverlay=disable-wifi
+          dtoverlay=pi3-disable-wifi
+          dtoverlay=pi3-disable-bt
+        '';
       };
-      timeout = 1;
+      timeout = 2;
     };
     cleanTmpDir = true;
     extraModprobeConfig = ''

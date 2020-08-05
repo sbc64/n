@@ -6,12 +6,30 @@ let
   #c = pkgs.callPackage ./common_attr.nix {};
   #c = lib.recursiveUpdate (pkgs.callPackage ./common_attr.nix {})
   hostname = "stannis";
+  net = {
+    interface = {
+      ip="192.168.1.160";
+      name="wlan0";
+      mac="08:11:96:a3:6b:cc";
+    };
+  };
+  f = ''SUBSYSTEM=="net",ACTION=="add",DRIVERS=="?*",ATTR{type}=="1",'';
 in
 {
+  networking.usePredictableInterfaceNames = true;
+  services.udev.extraRules = ''
+  ${f} ATTR{address}=="${net.interface.mac}", NAME="${net.interface.name}"
+  '';
+
   imports = [ 
     /etc/nixos/hardware-configuration.nix
-    /etc/nixos/common.nix
-    /etc/nixos/uk_wifi.nix
+    ./common.nix
+    ./beacon_prysm.nix
+    (import ./uk_wifi.nix {
+      config=config;
+      interface=net.interface.name;
+      ip=net.interface.ip;
+    })
     (import ./wireguard.nix { config=config; hostname=hostname; })
   ];
 
@@ -37,11 +55,6 @@ in
   networking = {
     enableIPv6 = false;
     hostName = hostname;
-    networkmanager = {
-      enable = true;
-      wifi.backend = "wpa_supplicant";
-    };
-
     firewall = {
       enable = true;
       allowPing = true;

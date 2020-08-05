@@ -11,9 +11,9 @@ in
     privateKey = secrets."${hostname}".wg.pk;
     peers = [
       {
-        allowedIPs = [ "10.100.0.0/24" ];
-        endpoint = "165.227.245.71:51820";
-        publicKey = "BbLNXeBKEiiibTt9Jux/VkqygYRE3ckChiwzoQierHE=";
+        allowedIPs = shared.bastion.wg.allowedIPs;
+        endpoint = shared.bastion.wg.endpoint;
+        publicKey = shared.bastion.wg.pubkey;
       }
     ];
   };

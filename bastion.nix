@@ -50,7 +50,7 @@ in
       peers = [
         { 
           # stannis
-          publicKey = shared.stannis.wg.pubk;
+          publicKey = shared.stannis.wg.pubkey;
           allowedIPs = [ shared.stannis.wg.ip ];
         }
         {

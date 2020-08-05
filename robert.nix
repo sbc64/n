@@ -1,19 +1,31 @@
 { config, pkgs, lib, ... }:
 let
-  qca9271 = pkgs.callPackage ./qca9271_firmware.nix { };
+  net = {
+    eth = {mac = "b8:27:eb:0b:00:64";name = "eth0"; };
+    embeded = { name = "wlan0"; mac = "b8:27:eb:5e:55:31";};
+    tplink = { name = "wlan1"; mac = "d0:37:45:6a:94:c3";};
+  };
+  f = ''SUBSYSTEM=="net",ACTION=="add",DRIVERS=="?*",ATTR{type}=="1",'';
 in
 {
   imports = [ 
     ./common.nix
     /etc/nixos/uk_wifi.nix
-    /etc/nixos/wifi-ap.nix
+    (import ./wifi-ap.nix { lib=lib; pkgs=pkgs; interfaces=net; })
   ];
+  networking.usePredictableInterfaceNames = true;
+  services.udev = {
+    extraRules = ''
+  ${f} ATTR{address}=="${net.eth.mac}", NAME="${net.eth.name}"
+  ${f} ATTR{address}=="${net.tplink.mac}", NAME="${net.tplink.name}"
+  ${f} ATTR{address}=="${net.embeded.mac}", NAME="${net.embeded.name}"
+  '';
+  };
 
   hardware = {
     firmware = with pkgs; [ 
       firmwareLinuxNonfree
       wireless-regdb
-      qca9271
     ];
     enableRedistributableFirmware = true;
   };
@@ -74,9 +86,9 @@ in
     enableIPv6 = false;
     hostName = "robert";
     wireless = {
-	enable = true;
-	interfaces = [ "wlan1" ];
-   };
+	    enable = true;
+	    interfaces = [ "wlan1" ];
+    };
     defaultGateway = {
       address = "192.168.1.254";
       interface = "wlan1";
@@ -86,6 +98,11 @@ in
     ];
 
     interfaces = {
+      eth0 = {
+        ipv4.addresses = [
+         { address="10.10.10.2"; prefixLength=24; }
+       ];
+      };
       wlan1 = {
         useDHCP = false;
         ipv4.addresses = [

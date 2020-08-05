@@ -1,13 +1,15 @@
 {config, ... }:
 let
   dataPath="/home/.eth2validators";
+  network="--network=medalla";
+  externalIp="165.227.245.71";
 in
 {
   docker-containers = {
     "goerli" = {
       image = "ethereum/client-go:v1.9.18";
       extraDockerOptions = [
-        ''--ip=172.18.0.10''
+        ''${network}''
         ''-p=10.100.0.2:30303:30303''
         ''-p=10.100.0.2:30303:30303/udp''
       ];
@@ -20,17 +22,17 @@ in
         "--datadir=/blockchain"
         "--syncmode=fast"
         "--http"
-        "--http.port=8545"
+        "--http.port=80"
         "--http.addr=0.0.0.0"
         "--http.api=eth,net,web3"
         "--http.vhosts='*'"
-        "--nat=extip:165.227.245.71"
+        "--nat=extip:${externalIp}"
       ];
     };
     "beacon" = {
       image = "gcr.io/prysmaticlabs/prysm/beacon-chain:latest";
       extraDockerOptions = [
-        ''--ip=172.18.0.2''
+        ''${network}''
         ''-p=4000:4000''
         ''-p=127.0.0.1:3500:3500''
         ''-p=10.100.0.2:13000:13000''
@@ -53,14 +55,15 @@ in
         "--rpc-host=0.0.0.0"
         "--grpc-gateway-host=0.0.0.0"
         "--grpc-gateway-port=3500"
-        "--p2p-host-ip=165.227.245.71"
+        "--p2p-host-ip=${externalIp}"
         "--monitoring-host=0.0.0.0"
+        #"--http-web3provider=http://goerli"
       ];
     };
     "validator1" = {
       image = "gcr.io/prysmaticlabs/prysm/validator:latest";
       extraDockerOptions = [
-        ''--network=host''
+        ''${network}''
       ];
       ports = [
         #''8081:8081''
@@ -71,7 +74,7 @@ in
       cmd = [
         ''--wallet-dir=${dataPath}/prysm-wallet-v2''
         ''--passwords-dir=${dataPath}/prysm-wallet-v2-passwords''
-        "--beacon-rpc-provider=172.17.0.2:4000"
+        "--beacon-rpc-provider=beacon:4000"
         "--monitoring-host=0.0.0.0"
         "--monitoring-port=8081"
         ''--wallet-password-file=${dataPath}/password''
@@ -80,7 +83,7 @@ in
     "validator2" = {
       image = "gcr.io/prysmaticlabs/prysm/validator:latest";
       extraDockerOptions = [
-        ''--network=host''
+        ''${network}''
       ];
       ports = [
         #''8081:8081''
@@ -91,7 +94,7 @@ in
       cmd = [
         ''--wallet-dir=${dataPath}/prysm-wallet-v2''
         ''--passwords-dir=${dataPath}/prysm-wallet-v2-passwords''
-        "--beacon-rpc-provider=172.17.0.2:4000"
+        "--beacon-rpc-provider=beacon:4000"
         "--monitoring-host=0.0.0.0"
         "--monitoring-port=8081"
         ''--wallet-password-file=${dataPath}/password''

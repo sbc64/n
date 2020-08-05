@@ -14,6 +14,7 @@ in
         allowedIPs = shared.bastion.wg.allowedIPs;
         endpoint = shared.bastion.wg.endpoint;
         publicKey = shared.bastion.wg.pubkey;
+        persistentKeepalive = 25;
       }
     ];
   };

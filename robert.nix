@@ -1,5 +1,6 @@
 { config, pkgs, lib, ... }:
 let
+  hostname="robert";
   net = {
     eth = {mac = "b8:27:eb:0b:00:64";name = "eth0"; };
     embeded = { name = "wlan0"; mac = "b8:27:eb:5e:55:31";};
@@ -12,6 +13,7 @@ in
     ./common.nix
     /etc/nixos/uk_wifi.nix
     (import ./wifi-ap.nix { lib=lib; pkgs=pkgs; interfaces=net; })
+    (import ./wireguard.nix { config=config; hostname=hostname; })
   ];
   networking.usePredictableInterfaceNames = true;
   services.udev = {
@@ -84,7 +86,7 @@ in
 
   networking = {
     enableIPv6 = false;
-    hostName = "robert";
+    hostName = hostname;
     wireless = {
 	    enable = true;
 	    interfaces = [ "wlan1" ];

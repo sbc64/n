@@ -1,12 +1,13 @@
-{ config, hostname, ... }:
+{ config, hostname }:
 let
   secrets = import <secrets>;
+  shared = import ./shared_attr.nix;
   interface = "wg0";
 in
 {
   networking.firewall.trustedInterfaces = [ interface ];
   networking.wg-quick.interfaces."${interface}" = {
-    address = [ "10.100.0.2/32" ];
+    address = [ shared."${hostname}".wg.ip ];
     privateKey = secrets."${hostname}".wg.pk;
     peers = [
       {

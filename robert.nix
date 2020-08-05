@@ -1,4 +1,7 @@
 { config, pkgs, lib, ... }:
+let
+  qca9271 = pkgs.callPackage ./qca9271_firmware.nix { };
+in
 {
   imports = [ 
     ./common.nix
@@ -7,8 +10,12 @@
   ];
 
   hardware = {
+    firmware = with pkgs; [ 
+      firmwareLinuxNonfree
+      wireless-regdb
+      qca9271
+    ];
     enableRedistributableFirmware = true;
-    firmware = [ pkgs.wireless-regdb ];
   };
 
   fileSystems = {
@@ -21,8 +28,7 @@
   swapDevices = [ { device = "/swapfile"; size = 1024; } ];
 
   boot = {
-    kernelPackages = pkgs.linuxPackages_4_19;
-    #kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages_5_6;
     kernelParams = [
       "cma=32M"
       "nosplash"

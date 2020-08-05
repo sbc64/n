@@ -21,10 +21,26 @@ let
       name="wlan1";
       mac = "00:c0:ca:98:ab:75";
     };
+    eth = {
+      ip="10.10.10.10";
+      name="eth0";
+      mac = "f0:de:f1:a5:6c:ef";
+    };
   };
   f = ''SUBSYSTEM=="net",ACTION=="add",DRIVERS=="?*",ATTR{type}=="1",'';
 in
 {
+
+  networking = {
+    interfaces = {
+      eth0 = {
+        ipv4.addresses = [
+          { address=net.eth.ip; prefixLength=24; }
+        ];
+      };
+    };
+  };
+
   imports = [ 
     /etc/nixos/hardware-configuration.nix
     ./common.nix
@@ -46,8 +62,10 @@ in
   services.udev = {
     extraRules = ''
   ${f} ATTR{address}=="${net.interface.mac}", NAME="${net.interface.name}"
-  ${f} ATTR{address}=="${net.modem.mac}", NAME="${net.modem.name}"
+  ${f} ATTR{address}=="${net.eth.mac}", NAME="${net.eth.name}"
   ${f} ATTR{address}=="${net.atheros.mac}", NAME="${net.atheros.name}"
+
+  ${f} ATTR{address}=="${net.modem.mac}", NAME="${net.modem.name}"
   ATTR{idVendor}=="12d1", ATTR{idProduct}=="14f0", RUN+="${pkgs.usb_modeswitch}/bin/usb_modeswitch -J '%b/%k'"
   '';
   };

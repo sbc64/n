@@ -1,7 +1,7 @@
 {config, ... }:
 let
   dataPath="/home/.eth2validators";
-  network="--network=medalla";
+  network="--network=medalla"; # docker network create medalla --driver bridge
   externalIp="165.227.245.71";
 in
 {

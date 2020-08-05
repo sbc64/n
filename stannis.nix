@@ -12,19 +12,28 @@ let
       name="wlan0";
       mac="08:11:96:a3:6b:cc";
     };
+    modem = {
+      name="gsm0";
+      mac="0c:5b:8f:27:9a:64";
+    };
+    atheros = {
+      ip="192.168.1.162";
+      name="wlan1";
+      mac = "00:c0:ca:98:ab:75";
+    };
   };
   f = ''SUBSYSTEM=="net",ACTION=="add",DRIVERS=="?*",ATTR{type}=="1",'';
 in
 {
-  networking.usePredictableInterfaceNames = true;
-  services.udev.extraRules = ''
-  ${f} ATTR{address}=="${net.interface.mac}", NAME="${net.interface.name}"
-  '';
-
   imports = [ 
     /etc/nixos/hardware-configuration.nix
     ./common.nix
     ./beacon_prysm.nix
+    (import ./modem.nix {
+      config=config;
+      pkgs=pkgs;
+      interface=net.modem.name;
+    })
     (import ./uk_wifi.nix {
       config=config;
       interface=net.interface.name;
@@ -33,6 +42,17 @@ in
     (import ./wireguard.nix { config=config; hostname=hostname; })
   ];
 
+  networking.usePredictableInterfaceNames = true;
+  services.udev = {
+    extraRules = ''
+  ${f} ATTR{address}=="${net.interface.mac}", NAME="${net.interface.name}"
+  ${f} ATTR{address}=="${net.modem.mac}", NAME="${net.modem.name}"
+  ${f} ATTR{address}=="${net.atheros.mac}", NAME="${net.atheros.name}"
+  ATTR{idVendor}=="12d1", ATTR{idProduct}=="14f0", RUN+="${pkgs.usb_modeswitch}/bin/usb_modeswitch -J '%b/%k'"
+  '';
+  };
+
+  hardware.usbWwan.enable = true;
   boot = {
     kernelPackages = pkgs.linuxPackages_latest;
     loader = {
@@ -42,6 +62,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    modemmanager
   ] ++ c.commonPackages ++ c.workPackages;
 
   services = {

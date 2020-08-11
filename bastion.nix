@@ -12,6 +12,7 @@ in
     /etc/nixos/hardware-configuration.nix
     /etc/nixos/networking.nix # generated at runtime by nixos-infect
     ./common.nix
+    ./hashcloak.com.nix
   ];
 
   environment.systemPackages = with pkgs; [
@@ -48,7 +49,8 @@ in
   networking.nat.internalInterfaces = [ "wg0" ];
   networking.firewall = {
     trustedInterfaces = [ "wg0" ];
-    allowedUDPPorts = [ 51820 ];
+    allowedUDPPorts = [ 80 443 51820 ];
+    allowedTCPPorts = [ 80 443 ];
   };
 
   networking.wireguard.interfaces = {
@@ -74,6 +76,11 @@ in
           # robert
           publicKey = shared.robert.wg.pubkey;
           allowedIPs = [ shared.robert.wg.ip ];
+        }
+        {
+          # mini
+          publicKey = shared.mini.wg.pubkey;
+          allowedIPs = [ shared.mini.wg.ip ];
         }
       ];
     };

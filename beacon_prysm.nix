@@ -3,17 +3,19 @@ let
   dataPath="/home/.eth2validators";
   network="--network=medalla"; # docker network create medalla --driver bridge
   externalIp="165.227.245.71";
+  eth1Port="8545";
 in
 {
   docker-containers = {
     "goerli" = {
-      image = "ethereum/client-go:v1.9.18";
+      image = "ethereum/client-go:v1.9.19";
       extraDockerOptions = [
         ''${network}''
         ''-p=10.100.0.2:30303:30303''
         ''-p=10.100.0.2:30303:30303/udp''
       ];
       volumes = [
+        # docker volume create goerli
         "goerli:/blockchain"
       ];
       cmd = [
@@ -22,10 +24,14 @@ in
         "--datadir=/blockchain"
         "--syncmode=fast"
         "--http"
-        "--http.port=80"
+        "--http.port=${eth1Port}"
         "--http.addr=0.0.0.0"
         "--http.api=eth,net,web3"
-        "--http.vhosts='*'"
+        ''--http.corsdomain=*''
+        ''--http.vhosts=*''
+        "--ws"
+        "--ws.addr=0.0.0.0"
+        ''--ws.origins=*''
         "--nat=extip:${externalIp}"
       ];
     };
@@ -57,7 +63,7 @@ in
         "--grpc-gateway-port=3500"
         "--p2p-host-ip=${externalIp}"
         "--monitoring-host=0.0.0.0"
-        #"--http-web3provider=http://goerli"
+        "--http-web3provider=http://goerli:${eth1Port}/"
       ];
     };
     "validator1" = {

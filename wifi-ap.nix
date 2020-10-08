@@ -39,7 +39,7 @@ in {
 
   systemd.services.check-ap = {
     description = "Reboots computer if the ${interfaces.tplink.name} is not correct";
-    wantedBy = [ "multi-user.targer" ];
+    wantedBy = [ "multi-user.target" ];
     after = [ "hostapd.service" ];
     serviceConfig = {
       ExecStart = "${pkgs.bash}/bin/bash ${pkgs.writeText "check-wifi.sh" ''

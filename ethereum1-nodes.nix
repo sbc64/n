@@ -12,6 +12,7 @@ let
         entrypoint:
           - geth
           - --nousb
+          - --ipcdisable
           - --datadir=/blockchain
           - --syncmode=fast
           - --http
@@ -33,6 +34,35 @@ let
             mode: host
           - target: 30303
             published: 30303
+            protocol: udp
+            mode: host
+      goerli:
+        image: ethereum/client-go:stable
+        entrypoint:
+          - geth
+          - --goerli
+          - --ipcdisable
+          - --nousb
+          - --datadir=/blockchain
+          - --http
+          - --http.port=8546
+          - --http.addr=0.0.0.0
+          - --http.api=eth,net,web3
+          - --http.vhosts="*"
+          - --port=30304
+        volumes:
+          - goerli:/blockchain
+        ports:
+          - target: 8546
+            published: 8546
+            protocol: tcp
+            mode: host
+          - target: 30304
+            published: 30304
+            protocol: tcp
+            mode: host
+          - target: 30304
+            published: 30304
             protocol: udp
             mode: host
   '';

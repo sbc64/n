@@ -11,7 +11,9 @@ in
     pubkey = "zll0iq9EDn1wab+rMGoccVvV2AdHfpNJdi3RkvCcdys=";
   };
   mini.wg = {
-    ip = "10.100.0.4/32";
+    localCaptureRange = [ "0.0.0.0/0" "::/0"];
+    localIp = [ "10.100.0.4/24" ];
+    serverAssigned = [ "10.100.0.4/32" ];
     pubkey = "HuQiO5nYdAXGG5zQX0Hqz/OsXL6tG+dk+hlMRPh9XAg=";
   };
   bastion.wg = {

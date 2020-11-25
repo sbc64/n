@@ -42,7 +42,7 @@ in
     after = [ "docker.service" ];
     requires = [ "docker.service" ];
     script = ''
-      IP=$(${pkgs.curl}/bin/curl -s https://ident.me)
+      IP=$(${pkgs.iproute}/bin/ip route get 1.1.1.1 | cut -f 7 -d ' ')
       ${pkgs.docker}/bin/docker swarm init --advertise-addr=$IP || true
     '';
     serviceConfig = {

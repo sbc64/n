@@ -1,3 +1,7 @@
+# remember to change the function call
+# of /etc/nixos/configutaion to
+# { pkgs, config, ... }: {
+# to allow for this import vvvvvv to work
 {pkgs, useZsh ? false, ...}:
 let
   swarmMetricsPort = 9323;
@@ -15,7 +19,7 @@ in {
   };
 
   services = {
-    do-agent.enable = true;
+    do-agent.enable = false;
     openssh = {
       passwordAuthentication = false;
     };

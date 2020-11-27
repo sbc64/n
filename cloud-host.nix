@@ -1,4 +1,4 @@
-{pkgs, ...}:
+{pkgs, useZsh ? false, ...}:
 let
   swarmMetricsPort = 9323;
   dockerbip="172.18.0.1";
@@ -23,13 +23,13 @@ in {
   environment.systemPackages = with pkgs; [ 
     vim git neovim htop curl wget gnumake42 fd ripgrep starship
   ];
-  users.defaultUserShell = pkgs.zsh;
+  users.defaultUserShell = if useZsh then pkgs.zsh else pkgs.bash;
   programs = {
     zsh = {
       ohMyZsh = {
-        enable = true;
+        enable = useZsh;
       };
-      enable = true;
+      enable = useZsh;
       enableCompletion = true;
       autosuggestions = {
         enable = true;
@@ -51,7 +51,7 @@ in {
       promptInit = "";
     };
     tmux = {
-      enable = true;
+      enable = useZsh;
       extraConfig = builtins.readFile "${pkgs.fetchurl {
         name = "tmux.conf";
         url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";

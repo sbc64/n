@@ -1,3 +1,7 @@
+# remember to change the function call
+# of /etc/nixos/configutaion to
+# { pkgs, config, ... }: {
+# to allow for this import vvvvvv to work
 {pkgs, useZsh ? false, ...}:
 let
   sshPort=59743;

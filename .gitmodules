@@ -3,4 +3,4 @@
 	url = git@github.com:sebohe/nixpkgs.git
 [submodule "stakers"]
 	path = stakers
-	url = https://github.com/sebohe/stakers.git
+	url = https://github.com/sbc64/stakers.git

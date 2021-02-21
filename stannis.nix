@@ -1,6 +1,7 @@
 { config, pkgs, lib, ... }:
 let
   c = import ./common_attr.nix {};
+  secrets = import ./secrets.nix;
   # I'm leaving this commented to show multiples ways of how this
   # can be imported
   #c = pkgs.callPackage ./common_attr.nix {};
@@ -23,14 +24,23 @@ in
 {
 
   networking = {
+    defaultGateway = {
+      address = "192.168.1.1";
+      interface = net.eth.name;
+    };
+    nameservers = [
+      "1.1.1.1"
+    ];
     interfaces = {
-      eth0.ipv4 = {
-        addresses = [
-          { address=net.eth.ip; prefixLength=24; }
-        ];
-        routes = [
-          { address=net.eth.ip; prefixLength=24; via = "192.168.1.1"; }
-        ];
+      "${net.eth.name}" ={
+        ipv4 = {
+          addresses = [
+            { address=net.eth.ip; prefixLength=24; }
+          ];
+          routes = [
+
+          ];
+        };
       };
     };
   };
@@ -38,12 +48,12 @@ in
   imports = [ 
     /etc/nixos/hardware-configuration.nix
     ./common.nix
-    (import ./uk_wifi.nix {
-      config=config;
-      interface=net.wlan0.name;
-      ip=net.wlan0.ip;
-    })
-    (import ./wireguard.nix { config=config; hostname=hostname; server = "server"; })
+    #(import ./uk_wifi.nix {
+      #config=config;
+      #interface=net.wlan0.name;
+      #ip=net.wlan0.ip;
+    #})
+    (import ./stakers/wireguard.nix { inherit secrets config hostname; server = "server"; enabled=true;})
   ];
 
   networking.usePredictableInterfaceNames = true;

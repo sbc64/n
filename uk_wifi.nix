@@ -1,6 +1,5 @@
 { config, interface, ip, secrets ? import <secrets> }:
 let
-  shared = import ./shared_attr.nix;
 in
 {
   networking = {
@@ -8,14 +7,12 @@ in
       address = secrets.uk-wifi.gw;
       interface = interface;
     };
-    nameservers = [
-      shared.bastion.wg.ip
-      "1.1.1.1"
-    ];
-
-    wireless.enable = true;
+    wireless = {
+      enable = true;
+      interfaces = [ interface ];
+    };
     networkmanager.unmanaged = [ interface ];
-    wireless.networks."secrets.uk-wifi.ssid" = {
+    wireless.networks."${secrets.uk-wifi.ssid}" = {
       pskRaw = secrets.uk-wifi.psk;
     };
     interfaces = {

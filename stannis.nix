@@ -48,11 +48,7 @@ in
   imports = [ 
     /etc/nixos/hardware-configuration.nix
     ./common.nix
-    #(import ./uk_wifi.nix {
-      #config=config;
-      #interface=net.wlan0.name;
-      #ip=net.wlan0.ip;
-    #})
+    #(import ./uk_wifi.nix { config=config; interface=net.wlan0.name; ip=net.wlan0.ip; })
     (import ./stakers/wireguard.nix { inherit secrets config hostname; server = "server"; enabled=true;})
   ];
 

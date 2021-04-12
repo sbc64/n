@@ -1,28 +1,20 @@
 { config, pkgs, lib, ... }:
 let
   c = import ./common_attr.nix {};
+  secrets = import ./secrets.nix;
   # I'm leaving this commented to show multiples ways of how this
   # can be imported
   #c = pkgs.callPackage ./common_attr.nix {};
   #c = lib.recursiveUpdate (pkgs.callPackage ./common_attr.nix {})
   hostname = "stannis";
   net = {
-    interface = {
-      ip="192.168.1.160";
+    wlan0 = {
+      ip="192.168.1.231";
       name="wlan0";
       mac="08:11:96:a3:6b:cc";
     };
-    modem = {
-      name="gsm0";
-      mac="0c:5b:8f:27:9a:64";
-    };
-    atheros = {
-      ip="192.168.1.162";
-      name="wlan1";
-      mac = "00:c0:ca:98:ab:75";
-    };
     eth = {
-      ip="10.10.10.10";
+      ip="192.168.1.3";
       name="eth0";
       mac = "f0:de:f1:a5:6c:ef";
     };
@@ -32,11 +24,23 @@ in
 {
 
   networking = {
+    defaultGateway = {
+      address = "192.168.1.1";
+      interface = net.eth.name;
+    };
+    nameservers = [
+      "1.1.1.1"
+    ];
     interfaces = {
-      eth0 = {
-        ipv4.addresses = [
-          { address=net.eth.ip; prefixLength=24; }
-        ];
+      "${net.eth.name}" ={
+        ipv4 = {
+          addresses = [
+            { address=net.eth.ip; prefixLength=24; }
+          ];
+          routes = [
+
+          ];
+        };
       };
     };
   };
@@ -44,29 +48,15 @@ in
   imports = [ 
     /etc/nixos/hardware-configuration.nix
     ./common.nix
-    ./beacon_prysm.nix
-    (import ./modem.nix {
-      config=config;
-      pkgs=pkgs;
-      interface=net.modem.name;
-    })
-    (import ./uk_wifi.nix {
-      config=config;
-      interface=net.interface.name;
-      ip=net.interface.ip;
-    })
-    (import ./wireguard.nix { config=config; hostname=hostname; })
+    #(import ./uk_wifi.nix { config=config; interface=net.wlan0.name; ip=net.wlan0.ip; })
+    (import ./stakers/wireguard.nix { inherit secrets config hostname; server = "server"; enabled=true;})
   ];
 
   networking.usePredictableInterfaceNames = true;
   services.udev = {
     extraRules = ''
-  ${f} ATTR{address}=="${net.interface.mac}", NAME="${net.interface.name}"
+  ${f} ATTR{address}=="${net.wlan0.mac}", NAME="${net.wlan0.name}"
   ${f} ATTR{address}=="${net.eth.mac}", NAME="${net.eth.name}"
-  ${f} ATTR{address}=="${net.atheros.mac}", NAME="${net.atheros.name}"
-
-  ${f} ATTR{address}=="${net.modem.mac}", NAME="${net.modem.name}"
-  ATTR{idVendor}=="12d1", ATTR{idProduct}=="14f0", RUN+="${pkgs.usb_modeswitch}/bin/usb_modeswitch -J '%b/%k'"
   '';
   };
 

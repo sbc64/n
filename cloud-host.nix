@@ -4,6 +4,7 @@
 # to allow for this import vvvvvv to work
 {pkgs, useZsh ? false, ...}:
 let
+  sshPort=59743;
   swarmMetricsPort = 9323;
   dockerbip="172.18.0.1";
 in {
@@ -14,7 +15,7 @@ in {
   networking = {
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 80 443 ];
+      allowedTCPPorts = [ sshPort 80 443 ];
     };
   };
 
@@ -25,7 +26,7 @@ in {
     };
   };
   environment.systemPackages = with pkgs; [ 
-    vim git neovim htop curl wget gnumake42 fd ripgrep starship
+    vim git neovim htop curl wget gnumake42 fd ripgrep starship jq
   ];
   users.defaultUserShell = if useZsh then pkgs.zsh else pkgs.bash;
   programs = {

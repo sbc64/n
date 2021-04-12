@@ -1,33 +1,27 @@
-{ config, interface, ip }:
+{ config, interface, ip, secrets ? import <secrets> }:
 let
-  secrets = import <secrets>;
 in
 {
   networking = {
     defaultGateway = {
-      address = "192.168.1.254";
+      address = secrets.uk-wifi.gw;
       interface = interface;
     };
-    nameservers = [
-        "1.1.1.1"
-    ];
-
-    wireless.enable = true;
+    wireless = {
+      enable = true;
+      interfaces = [ interface ];
+    };
     networkmanager.unmanaged = [ interface ];
-    wireless.networks."EE-Hub-9iPp" = {
+    wireless.networks."${secrets.uk-wifi.ssid}" = {
       pskRaw = secrets.uk-wifi.psk;
     };
     interfaces = {
       "${interface}" = {
         useDHCP = false;
         ipv4.addresses = [
-          {
-            address=ip;
-            prefixLength = 24;
-          }
+          { address=ip; prefixLength = 24; }
         ];
       };
     };
-
   };
 }

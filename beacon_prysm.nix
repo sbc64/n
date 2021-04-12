@@ -8,7 +8,7 @@ in
 {
   docker-containers = {
     "goerli" = {
-      image = "ethereum/client-go:v1.9.19";
+      image = "ethereum/client-go:v1.9.21";
       extraDockerOptions = [
         ''${network}''
         ''-p=10.100.0.2:30303:30303''

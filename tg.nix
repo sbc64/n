@@ -13,13 +13,14 @@ let
   };
 in
 {
-  docker-containers = {
+  virtualisation.oci-containers.backend = "docker";
+  virtualisation.oci-containers.containers = {
     "turbo" = {
       image = tg.imageName+":"+tag;
-      extraDockerOptions = [
+      extraOptions = [
         ''${network}''
-        ''-p=10.1.0.9:30303:30303''
-        ''-p=10.1.0.9:30303:30303/udp''
+        ''-p=10.1.0.10:30303:30303''
+        ''-p=10.1.0.10:30303:30303/udp''
       ];
       volumes = [
         "/mnt/tg:/blockchain"
@@ -35,7 +36,7 @@ in
     };
    "rpcdaemon" = {
      image = tg.imageName+":"+tag;
-     extraDockerOptions = [
+     extraOptions = [
        ''${network}''
      ];
      cmd = [

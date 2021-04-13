@@ -32,7 +32,7 @@ in
         source "${pkgs.fetchurl {
           name = "zshrc";
           url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.zshrc";
-          sha256 = "72949c45efbae6af7c6080874298655f53c998013e0e92ddffc9b94b3db30587";
+          sha256 = "1jc0sj84rz7pqb81qjn0vmdf695acxds417m2whn2zk5vkqq0dqf";
         }}"
       '';
       promptInit = "";
@@ -42,7 +42,7 @@ in
       extraConfig = builtins.readFile "${pkgs.fetchurl {
         name = "tmux.conf";
         url = "https://raw.githubusercontent.com/sebohe/dotfiles/master/.tmux.conf";
-        sha256 = "6a1bba3ead2477f387a18bcae1049dbfd309d8ace064c73cfd4b6bf1efdc2a24";
+        sha256 = "0iskawnk35b9ka032jbn3bhbncajwqhv6xl294b113z79w1pvv90";
       }}";
     };
   };

@@ -4,11 +4,11 @@ let
   externalIp="136.244.116.42";
   rpcEth1Port="8545";
   image="sebohe/turbo-geth";
-  tag="v2021.04.02";
+  tag="v2021.04.04";
   tg = pkgs.dockerTools.pullImage {
     imageName = image;
     finalImageTag = tag;
-    imageDigest = "sha256:364fc9cf2ff415e3dd82a0d8d3be8d8f53808d15de1ccd06ee8c35d756f1fd9a";
+    imageDigest = "sha256:383d154df5ea3804baae6052ac33f34bdfe07ff0027da66c2f7b1462af3ae611";
     sha256 = "000003zq2v6rrhizgb9nvhczl87lcfphq9601wcprdika2jz7qh8";
   };
 in

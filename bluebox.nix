@@ -40,6 +40,29 @@ in
     };
   };
 
+  boot.initrd.luks.devices = {
+      "tg" = {
+        device = "/dev/disk/by-uuid/2031fdab-7337-42ca-8705-5ce97d729621";
+        keyFile = "/dev/disk/by-uuid/4117-B332";
+        keyFileSize = 4096;
+        keyFileOffset = 81920;
+        preLVM = false;
+        fallbackToPassword = true;
+    };
+  };
+  boot.initrd.network = {
+    ssh = {
+      enable = false;
+      hostKeys =  [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];
+    };
+    enable = true;
+  };
+  fileSystems."/mnt/tg" = {
+      device = "/dev/disk/by-uuid/ad16e148-1449-4521-8a3b-54951e6aa1dd";
+      fsType = "ext4";
+      options = [ "nofail,x-systemd.mount-timeout=5s"];
+  };
+
   imports = [ 
     ./tg.nix
     /etc/nixos/hardware-configuration.nix
